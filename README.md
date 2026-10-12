@@ -1,177 +1,316 @@
+# Job Hunter — Smart Job Search Aggregator
 
-
-Readme · MD
-# 🇲🇦 Job Hunter — Agrégateur d'Offres d'Emploi Intelligent
- 
-> Centralisez, classez et exportez les meilleures offres d'emploi du Maroc et d'ailleurs — en une seule recherche.
- 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/Flask-Backend-000000?logo=flask&logoColor=white" alt="Flask">
-  <img src="https://img.shields.io/badge/PostgreSQL-Database-336791?logo=postgresql&logoColor=white" alt="PostgreSQL">
-  <img src="https://img.shields.io/badge/HTML5-Frontend-E34F26?logo=html5&logoColor=white" alt="HTML5">
-  <img src="https://img.shields.io/badge/SerpAPI-Integration-4285F4" alt="SerpAPI">
-  <img src="https://img.shields.io/badge/Status-Active-success" alt="Status">
-  <img src="https://img.shields.io/badge/License-Not%20specified-lightgrey" alt="License">
+<p align="left">
+  <img src="https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/Flask-REST%20API-000000?logo=flask&logoColor=white" alt="Flask" />
+  <img src="https://img.shields.io/badge/PostgreSQL-Database-336791?logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/SerpAPI-Job%20Discovery-4285F4" alt="SerpAPI" />
+  <img src="https://img.shields.io/badge/Frontend-HTML%20%2F%20JavaScript-E34F26?logo=html5&logoColor=white" alt="HTML and JavaScript" />
+  <img src="https://img.shields.io/badge/Export-Excel-217346?logo=microsoftexcel&logoColor=white" alt="Excel Export" />
+  <img src="https://img.shields.io/badge/License-Not%20specified-lightgrey" alt="License not specified" />
 </p>
----
- 
-## 📌 Aperçu du projet
- 
-**Job Hunter** est un outil d'agrégation d'offres d'emploi qui interroge simultanément plusieurs plateformes de recrutement (**LinkedIn, Bayt, Rekrute, Emploi.ma, Indeed, Glassdoor, Monster**) via l'API **SerpAPI**, puis **déduplique, classe et score** les résultats selon leur pertinence par rapport aux compétences recherchées. Conçu pour les chercheurs d'emploi — en particulier sur le marché marocain et MENA — il transforme une recherche multi-sites chronophage en un flux de travail centralisé, historisé en base de données et exportable en Excel.
- 
-Ce projet s'adresse aux **développeurs, candidats tech et professionnels en reconversion** souhaitant automatiser leur veille emploi plutôt que de parcourir manuellement chaque plateforme.
- 
----
- 
-## ✨ Fonctionnalités clés
- 
-- 🔎 **Recherche multi-sources unifiée** : une seule requête interroge 7 plateformes (LinkedIn, Bayt, Rekrute, Emploi.ma, Indeed, Glassdoor, Monster) via Google Jobs API et des requêtes ciblées `site:`.
-- 🧠 **Scoring de pertinence intelligent** : algorithme de classement basé sur la correspondance des mots-clés (titre vs description), la qualité de la source, la présence d'un salaire et la fraîcheur de l'annonce.
-- 🧹 **Déduplication automatique** des offres provenant de sources multiples.
-- 🗄️ **Historisation en base PostgreSQL** : chaque recherche est sauvegardée pour constituer une base d'opportunités dans le temps.
-- 📊 **Export Excel formaté** : fichier `.xlsx` avec liens cliquables, code couleur selon la pertinence et une feuille de synthèse (stats par source, totaux, métadonnées).
-- 🖥️ **Interface web légère** : frontend HTML/JS mono-page, sans dépendances lourdes.
-- 🔌 **API REST simple** exposant recherche, export, historique et statistiques.
-- ⏱️ **Automatisable** : compatible avec une exécution planifiée (cron) pour une veille quotidienne.
----
- 
-## 🏗️ Architecture & Stack Technique
- 
-| Composant | Technologie | Rôle |
+
+## Overview
+
+**Job Hunter** is a job search aggregation platform designed to simplify the process of discovering, evaluating, and tracking employment opportunities.
+
+Instead of manually searching across multiple job boards, users can submit a single search query and collect relevant opportunities through SerpAPI-powered search workflows. The application processes the results, removes duplicates, ranks opportunities using a relevance-scoring system, and stores search data for later review.
+
+Built with Python, Flask, and PostgreSQL, the project combines external API integration, data processing, REST API development, database persistence, and structured Excel reporting in one practical application.
+
+It is particularly relevant to job seekers exploring opportunities in Morocco and international markets.
+
+## Key Features
+
+- **Unified Job Discovery:** Collect job listings through a centralized search workflow using SerpAPI.
+- **Multi-Source Search:** Combine Google Jobs results with targeted searches for additional job platforms.
+- **Relevance Scoring:** Rank opportunities using keyword matches, title relevance, source information, salary availability, and posting freshness.
+- **Automatic Deduplication:** Reduce duplicate listings returned by overlapping searches.
+- **Persistent Job Data:** Store job listings and related search information in PostgreSQL.
+- **Excel Reporting:** Export formatted `.xlsx` reports with clickable links, relevance indicators, and summary statistics.
+- **Search History:** Retrieve previous searches and review stored opportunities.
+- **REST API:** Expose endpoints for search, export, history, and statistics.
+- **Lightweight Web Interface:** Provide a simple HTML and JavaScript interface without a heavy frontend framework.
+- **Automation Potential:** Support scheduled searches through external scheduling tools such as cron, when configured.
+
+## Technology Stack
+
+| Component | Technology | Purpose |
 |---|---|---|
-| **Backend** | Python (Flask) | Serveur API REST (`app.py`) |
-| **Scraping / Sourcing** | SerpAPI (Google Jobs API) | Récupération et scoring des offres (`scraper.py`) |
-| **Base de données** | PostgreSQL | Persistance des offres et historique des recherches (`database.py`) |
-| **Export** | openpyxl (implicite via `.xlsx`) | Génération de rapports Excel formatés (`excel_export.py`) |
-| **Frontend** | HTML5 / JavaScript (SPA légère) | Interface utilisateur (`index.html`) |
-| **Architecture logicielle** | API REST + séparation claire des responsabilités (scraping / persistance / export / présentation) | Modularité et maintenabilité |
- 
-### 🔑 Endpoints API principaux
- 
-| Méthode | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/search` | Lancer une recherche d'offres |
-| `POST` | `/api/export/excel` | Télécharger les résultats au format Excel |
-| `GET` | `/api/history` | Récupérer l'historique des recherches |
-| `GET` | `/api/stats` | Statistiques de la base de données |
-| `GET` | `/health` | Vérification de l'état du service |
- 
-### 🗄️ Schéma de la base de données
- 
-```sql
-jobs (
-  id, title, company, location, source, url, description,
-  salary, posted_at, work_type, relevance_score,
-  keywords_matched, search_query, scraped_at
-)
+| Backend | Python, Flask | Application logic and REST API |
+| Job discovery | SerpAPI | Retrieve search and job listing results |
+| Data processing | Python | Normalize, deduplicate, and rank results |
+| Database | PostgreSQL | Persist job listings and search data |
+| Excel export | openpyxl, if used by the implementation | Generate formatted spreadsheets |
+| Frontend | HTML5, JavaScript, CSS | Search interface and results presentation |
+| Configuration | Environment variables | Separate credentials and configuration from source code |
+
+## Architecture
+
+The application separates job discovery, processing, persistence, reporting, and presentation into distinct responsibilities.
+
+```text
+                  User
+                   |
+                   v
+            Web Interface
+                   |
+                   v
+             Flask REST API
+                   |
+                   v
+            Search Workflow
+                   |
+                   v
+              SerpAPI
+                   |
+                   v
+       Normalize and Deduplicate
+                   |
+                   v
+          Relevance Scoring
+             /          \
+            v            v
+     PostgreSQL       Excel Export
+            |
+            v
+      Search History
 ```
- 
----
- 
-## 🚀 Guide d'installation & Démarrage rapide
- 
-### Prérequis
+
+This structure makes the main processing steps easier to understand and provides a foundation for future enhancements.
+
+## How the Relevance Scoring Works
+
+A search engine can return many results that are not equally useful to a candidate. Job Hunter adds a ranking step to help users prioritize opportunities.
+
+The described scoring logic considers:
+
+- **Title matching:** Whether the requested skills or keywords appear in the job title.
+- **Description matching:** Whether relevant keywords appear in the job description.
+- **Source information:** A source-related contribution to the ranking.
+- **Salary availability:** Whether salary information is provided.
+- **Posting freshness:** How recently the opportunity was published, when the necessary data is available.
+
+The resulting score helps users prioritize listings rather than treating every search result as equally relevant.
+
+The score is a heuristic ranking, not a guarantee that a job is a good fit or that the listing is still available.
+
+## Data Management
+
+Job listings are stored in a structured PostgreSQL table.
+
+The documented data model includes fields such as:
+
+| Field | Description |
+|---|---|
+| `title` | Job title |
+| `company` | Hiring company |
+| `location` | Job location |
+| `source` | Source associated with the listing |
+| `url` | Link to the original opportunity |
+| `description` | Available job description |
+| `salary` | Salary information, when available |
+| `posted_at` | Publication date, when available |
+| `work_type` | Work arrangement, when available |
+| `relevance_score` | Calculated relevance score |
+| `keywords_matched` | Matching search terms |
+| `search_query` | Associated search query |
+| `scraped_at` | Time the result was collected |
+
+This structure supports search history, result analysis, and subsequent reporting.
+
+## REST API
+
+The application exposes the following documented endpoints:
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `POST` | `/api/search` | Search for job opportunities |
+| `POST` | `/api/export/excel` | Export results to Excel |
+| `GET` | `/api/history` | Retrieve search history |
+| `GET` | `/api/stats` | Retrieve database statistics |
+| `GET` | `/health` | Check service health |
+
+Request formats, response schemas, and error handling depend on the implementation in the repository.
+
+## Excel Export
+
+Job Hunter turns collected listings into a structured spreadsheet that can be used outside the application.
+
+The documented export features include:
+
+- Clickable links to original job listings.
+- Visual indicators based on relevance scores.
+- Summary statistics grouped by source.
+- Totals and search-related metadata.
+
+This allows users to review, compare, and organize opportunities without remaining inside the web interface.
+
+## Getting Started
+
+### Prerequisites
+
 - Python 3.x
-- PostgreSQL (optionnel mais recommandé)
-- Une clé API [SerpAPI](https://serpapi.com) (plan gratuit : 100 recherches/mois)
-### 1️⃣ Cloner le projet
+- pip
+- A SerpAPI API key
+- PostgreSQL for persistent database storage, if enabled by the configuration
+
+### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/ELGHAD/job-hunter.git
 cd job-hunter
 ```
- 
-### 2️⃣ Installer les dépendances
+
+### 2. Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
- 
-### 3️⃣ Configurer les variables d'environnement
+
+Using a virtual environment is recommended:
+
+```bash
+python -m venv .venv
+```
+
+Activate it before installing dependencies.
+
+**Windows PowerShell:**
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+**Linux or macOS:**
+
+```bash
+source .venv/bin/activate
+```
+
+Then install the requirements.
+
+### 3. Configure Environment Variables
+
+Copy the example configuration:
+
 ```bash
 cp .env.example .env
-# Éditez .env et renseignez votre SERPAPI_KEY
 ```
- 
-### 4️⃣ Configurer PostgreSQL (optionnel)
+
+On Windows, you can copy the file using:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Configure the required values in `.env`, using the names expected by the application. For example:
+
+```dotenv
+SERPAPI_KEY=your_serpapi_api_key
+DATABASE_URL=your_postgresql_connection_string
+```
+
+These are example variable names; verify the repository's configuration before using them.
+
+Never commit your real API key or database credentials.
+
+### 4. Configure PostgreSQL
+
+If PostgreSQL persistence is enabled, create the database:
+
 ```sql
 CREATE DATABASE jobhunter;
 ```
-Renseignez ensuite `DATABASE_URL` dans le fichier `.env`. Les tables sont créées automatiquement au premier lancement.
- 
-### 5️⃣ Démarrer le backend
+
+Set the database connection string in your environment configuration. Initialize the schema according to the application's database implementation.
+
+### 5. Start the Backend
+
+From the repository root:
+
 ```bash
 cd backend
 python app.py
 ```
-➡️ Le serveur démarre sur `http://localhost:5050`
- 
-### 6️⃣ Lancer le frontend
+
+The documented local address is:
+
+```text
+http://localhost:5050
+```
+
+Use the host and port configured in the application if they differ.
+
+### 6. Open the Frontend
+
+From the repository root, serve the frontend directory:
+
 ```bash
-# Option A : ouvrir directement le fichier
-open frontend/index.html
- 
-# Option B : servir via un serveur local
 python -m http.server 3000 --directory frontend
-# Puis ouvrez http://localhost:3000
 ```
- 
----
- 
-## 📁 Structure du projet
- 
+
+Open the following address in your browser:
+
+```text
+http://localhost:3000
 ```
-job_hunter/
+
+If the frontend and backend use different ports, ensure that the frontend is configured to call the correct API address and that cross-origin requests are handled appropriately.
+
+## Project Structure
+
+```text
+job-hunter/
 ├── backend/
-│   ├── app.py            # Serveur API Flask
-│   ├── scraper.py        # Recherche SerpAPI + logique de scoring
-│   ├── database.py       # Persistance PostgreSQL
-│   └── excel_export.py   # Export Excel formaté
+│   ├── app.py
+│   ├── scraper.py
+│   ├── database.py
+│   └── excel_export.py
 ├── frontend/
-│   └── index.html        # Interface utilisateur (SPA)
-├── exports/               # Fichiers Excel générés
+│   └── index.html
+├── exports/
 ├── .env.example
 ├── requirements.txt
 └── README.md
 ```
- 
----
- 
-## ⚙️ Fonctionnement (résumé)
- 
-1. L'utilisateur saisit ses compétences/technologies (ex. `React, Node.js`).
-2. Le scraper construit plusieurs requêtes SerpAPI : Google Jobs API (LinkedIn, Glassdoor, Indeed) + requêtes ciblées `site:bayt.com`, `site:rekrute.com`, `site:emploi.ma`.
-3. Les résultats sont **dédupliqués** puis **classés** selon un score composite (mot-clé dans le titre vs description, qualité de la source, présence d'un salaire, fraîcheur de l'annonce).
-4. Les offres sont **enregistrées en PostgreSQL** pour l'historique.
-5. Export possible en **Excel formaté** avec code couleur selon la pertinence.
----
- 
-## 🔒 Sécurité & Bonnes pratiques
- 
-- **Gestion des secrets** via fichier `.env` (non versionné), clé SerpAPI isolée du code source.
-- **Séparation des responsabilités** : logique de scraping, persistance et export découplées en modules distincts.
-- **Persistance structurée** via PostgreSQL avec schéma de données explicite.
-- **API REST stateless** facilitant les tests et l'intégration continue.
-- **Configuration par environnement** (`.env.example` fourni) pour un déploiement reproductible.
-> 💡 Pistes d'amélioration suggérées : ajout de tests automatisés, authentification sur les endpoints sensibles, et validation stricte des entrées côté API.
- 
----
- 
-## 💡 Astuces d'utilisation
- 
-- Combinez plusieurs compétences séparées par des virgules pour élargir la recherche : `Python, Django, REST API`.
-- Le **badge de score de pertinence** (0–15+) affiché sur chaque offre indique la qualité du match.
-- Une bordure verte signale un score élevé (≥ 7) — à prioriser.
-- Automatisez la recherche quotidienne via une tâche **cron** pour constituer une base d'opportunités dans le temps.
----
- 
-## 👤 Auteur & Contact
- 
+
+The structure shown above reflects the documented project layout. Generated exports and other runtime files may vary depending on configuration.
+
+## Security and Reliability
+
+The project uses environment-based configuration to separate API credentials from application code and separates major responsibilities into distinct modules.
+
+For a more production-ready deployment, the following areas deserve attention:
+
+- Validate search inputs and limit query sizes.
+- Handle external API errors, timeouts, and rate limits.
+- Add tests for scoring, deduplication, and API responses.
+- Protect sensitive endpoints if user-specific data or administrative operations are introduced.
+- Use database constraints and appropriate indexes.
+- Avoid exposing credentials or internal error details in API responses.
+- Respect the terms and access policies of external job platforms and data providers.
+- Keep dependencies updated and document deployment configuration.
+
+## Potential Improvements
+
+Future iterations could introduce:
+
+- Saved searches and configurable job alerts.
+- Filters for location, work arrangement, seniority, and salary.
+- More transparent, configurable relevance scoring.
+- A dedicated dashboard for tracking shortlisted opportunities.
+- User accounts and personalized search preferences.
+- Automated integration and unit tests.
+- Docker-based deployment and continuous integration.
+- A deployment-ready configuration with monitoring and structured logging.
+
+These are possible extensions rather than claims about current functionality.
+
+## Author
+
 **ELGHAD**
-- GitHub : [@ELGHAD](https://github.com/ELGHAD)
-- Projet : [job-hunter](https://github.com/ELGHAD/job-hunter)
-N'hésitez pas à ⭐ le dépôt si ce projet vous a été utile, à ouvrir une *issue* pour toute suggestion, ou à proposer une *pull request* !
- 
----
- 
-<p align="center"><i>Développé avec 🇲🇦 passion pour simplifier la recherche d'emploi.</i></p>
- 
+
+- GitHub: https://github.com/ELGHAD
+- Repository: https://github.com/ELGHAD/job-hunter
+
